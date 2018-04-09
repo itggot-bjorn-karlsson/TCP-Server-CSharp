@@ -12,7 +12,7 @@ namespace tcp_server
     /// <summary>
     /// simple user holder for the server class, holds detail about each client
     /// </summary>
-    public class User
+    public class User : Interfaces.ServerUser.IUser, Interfaces.ServerUser.TCPUser.ITCPUser, Interfaces.ServerUser.SocketUser.ISocketUser
     {
         public String Name { get; set; }            // name of client
         public Socket Client { get; set; }          // the socket 
@@ -22,8 +22,7 @@ namespace tcp_server
         public NetworkStream Sw { get; set; }       // network stream (writer) (not working atm)
         public NetworkStream Sr { get; set; }       // network stream (reader) (not working atm)
 
-        public Boolean chatting = false;            // used for the chat program (not working atm)
-
+       
         /// <summary>
         /// initialzie the user
         /// </summary>

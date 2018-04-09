@@ -21,7 +21,7 @@ namespace tcp_server
     /// Contains every method used for client and server connection using a basic CLI.
     /// Multithreaded.
     /// </summary>
-    class Server
+    class Server : Interfaces.ServerOptions.ISocket, Interfaces.ServerOptions.IServerStandard, Interfaces.ServerOptions.ICLIServer
     {
         private static RequestHandler ClientCommands;                   // Holds every command for clientsided requests.
         private static RequestHandler ServerCommands;                   // Holds every command for serversided requests.
@@ -33,7 +33,7 @@ namespace tcp_server
         /// <summary>
         /// Executes the program.
         /// </summary>
-        static void Main()
+        public void Start()
         {
             // Testing
             StartSocketServer();
@@ -47,7 +47,7 @@ namespace tcp_server
         /// <returns>
         /// Returns the chosen IP Address in a String
         /// </returns>
-        static String ChooseIP()
+        public String ChooseIP()
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("The server found multiple Network interfaceses");
@@ -70,7 +70,7 @@ namespace tcp_server
         /// <summary>
         /// Initiates the server using a Socket
         /// </summary>
-        static void StartSocketServer()
+        public void StartSocketServer()
         {
             String hostName = Dns.GetHostName(); // Retrive the Name of HOST 
             if(Dns.GetHostByName(hostName).AddressList.Length > 1)
@@ -84,7 +84,7 @@ namespace tcp_server
             start:
             ClientCommands = new RequestHandler("Client");
             ServerCommands = new RequestHandler("Server");
-            Socket listenerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            System.Net.Sockets.Socket listenerSocket = new System.Net.Sockets.Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint ipEnd;
             try
             {
@@ -124,7 +124,7 @@ namespace tcp_server
             while (true)
             {
                 listenerSocket.Listen(0);
-                Socket clientSocket = listenerSocket.Accept();
+                System.Net.Sockets.Socket clientSocket = listenerSocket.Accept();
 
                 // Threads
                 Thread clientThread;
@@ -135,7 +135,7 @@ namespace tcp_server
         /// <summary>
         /// A method used in a different Thread. Used for CLI inputs on the Host
         /// </summary>
-        static void ServerConsoleHandler()
+        public void ServerConsoleHandler()
         {
             while (true)
             {
@@ -151,7 +151,7 @@ namespace tcp_server
         /// A method used in a different Thread. Used for updating clients on the server
         /// </summary>
         /// <Exception = "System.InvalidOperationException"> Catches errors when updating the Users List
-        static void UserUpdater()
+        public void UserUpdater()
         {
             while (true)
             {
@@ -178,7 +178,7 @@ namespace tcp_server
         /// Handles request and responses
         /// </summary>
         /// <param name="clientSocket">The client socket is used for multithreaded connections, Taken from an earlier stage of the program </param>
-        private static void ClientConnection(Socket clientSocket)
+        public void ClientConnection(System.Net.Sockets.Socket clientSocket)
         {
             User ClientUser = new User();
             ClientUser.Client = clientSocket;
@@ -269,7 +269,7 @@ namespace tcp_server
         /// (1)Carl
         /// (2)Josef
         /// </example>
-        private static String HandleRequest(RequestHandler RequestCommands, String RequestName, User user)
+        public String HandleRequest(RequestHandler RequestCommands, String RequestName, User user)
         {
             RequestName = RequestName.ToLower();
             RequestName = RequestName.Replace(" ", String.Empty);
@@ -349,7 +349,7 @@ namespace tcp_server
         /// <returns>
         /// Returns the substring of the message by location
         /// </returns>
-        private static String GetName(String message, Char location)
+        public String GetName(String message, Char location)
         {
             String Name = "";
             foreach (char c in message)
@@ -372,7 +372,7 @@ namespace tcp_server
         /// <returns>
         /// Returns the arguments in a array of strings
         /// </returns>
-        private static List<String> GetArguments(String str)
+        public List<String> GetArguments(String str)
         {
             List<String> Arguments = new List<String>();
             Int32 i = 0;
@@ -412,7 +412,7 @@ namespace tcp_server
         /// <summary>
         /// Initiates all client commands that can only be used from the Client CLI
         /// </summary>
-        private static void InitiateClientCommandMethods()
+        public void InitiateClientCommandMethods()
         {
             ClientCommands.AddMethodOnRequest("help", Help,             "Displays all commands:----------------------::::::::::::::::::::: Syntax: help");
             ClientCommands.AddMethodOnRequest("quit", Disconnect,       "Disconnect you from the server:-------------::::::::::::::::::::: Syntax: quit");
@@ -422,7 +422,7 @@ namespace tcp_server
         /// <summary>
         /// Initiates all client commands that can only be used from the Server CLI
         /// </summary>
-        private static void InitiateServerCommandMethods()
+        public void InitiateServerCommandMethods()
         {
             ServerCommands.AddMethodOnRequest("help", Help_Sv,                  "Displays all commands:---------------------:::::::::::::::::::: Syntax: help");
             ServerCommands.AddMethodOnRequest("cls", Clear,                     "Clears the screen:-------------------------:::::::::::::::::::: Syntax: cls");
@@ -436,7 +436,7 @@ namespace tcp_server
         }
         #region Request Methods
         // test, read the name and you will understand
-        private static String Addition(Object n1, Object n2)
+        public String Addition(Object n1, Object n2)
         {
 
             try
@@ -452,7 +452,7 @@ namespace tcp_server
                 return "Syntax error";
             }
         }
-        private static String Subtraction(Object n1, Object n2)
+        public String Subtraction(Object n1, Object n2)
         {
             try
             {
@@ -468,7 +468,7 @@ namespace tcp_server
             }
 
         }
-        private static String Division(Object n1, Object n2)
+        public String Division(Object n1, Object n2)
         {
             try
             {
@@ -488,7 +488,7 @@ namespace tcp_server
             }
 
         }
-        private static String Multiplication(Object n1, Object n2)
+        public String Multiplication(Object n1, Object n2)
         {
             try
             {
@@ -503,7 +503,7 @@ namespace tcp_server
                 return "Syntax error";
             }
         }
-        private static String SqrtOf(Object n1)
+        public String SqrtOf(Object n1)
         {
             try
             {
@@ -526,10 +526,10 @@ namespace tcp_server
         /// </summary>
         /// <param user="user_">Current user that will get disconnected</param>
         /// <returns> returns the information about the command (did it work or not)</returns>
-        private static String Disconnect(Object user_)
+        public String Disconnect(Object user_)
         {
             User user = (User)user_;
-            Socket client = user.Client;
+            System.Net.Sockets.Socket client = user.Client;
             client.Close();
             client.Dispose();
             return "Disconnected";
@@ -539,17 +539,17 @@ namespace tcp_server
         /// </summary>
         /// <param user="user_">The user with the TTL </param>
         /// <returns>returns the TTL of the user</returns>
-        private static String GetTTL(Object user_)
+        public String GetTTL(Object user_)
         {
             User user = (User)user_;
-            Socket client = user.Client;
+            System.Net.Sockets.Socket client = user.Client;
             return client.Ttl.ToString();
         }
         /// <summary>
         /// (Client command)reicves the IP address that the server uses
         /// </summary>
         /// <returns>returns the IP as a string</returns>
-        private static String GetIp()
+        public String GetIp()
         {
             return IP;
         }
@@ -557,7 +557,7 @@ namespace tcp_server
         /// (Client command) gets all the information about the commands
         /// </summary>
         /// <returns>returns information as a string</returns>
-        private static String Help()
+        public String Help()
         {
             return ClientCommands.GetAllRequest();
         }
@@ -565,7 +565,7 @@ namespace tcp_server
         /// (Server command) gets all the information about the commands
         /// </summary>
         /// <returns>returns information as a string</returns>
-        private static String Help_Sv()
+        public String Help_Sv()
         {
             return ServerCommands.GetAllRequest();
         }
@@ -573,7 +573,7 @@ namespace tcp_server
         /// (Server command) gets the date and time when the server started
         /// </summary>
         /// <returns>returns time as a string</returns>
-        private static String GetServerStartTime()
+        public String GetServerStartTime()
         {
             return ServerStartedTime;
         }
@@ -581,7 +581,7 @@ namespace tcp_server
         /// (Server command) gets the current time
         /// </summary>
         /// <returns>returns the time as a string</returns>
-        private static String GetTime()
+        public String GetTime()
         {
             return DateTime.Now.ToString();
         }
@@ -589,7 +589,7 @@ namespace tcp_server
         /// (server command) clear the CLI from any text
         /// </summary>
         /// <returns>returns errormessages </returns>
-        private static String Clear()
+        public String Clear()
         {
             Console.Clear();
             return String.Empty;
@@ -598,7 +598,7 @@ namespace tcp_server
         /// (server command) exits the server 
         /// </summary>
         /// <returns>data about the shutdown</returns>
-        private static String Exit()
+        public String Exit()
         {
             Process p = Process.GetCurrentProcess();
             p.Kill();
@@ -608,7 +608,7 @@ namespace tcp_server
         /// (server command)recives a list of all users that is currently connected to the server
         /// </summary>
         /// <returns> returns a string of all users</returns>
-        private static String GetUsers()
+        public String GetUsers()
         {
             String msg = String.Empty;
             Int32 i = 1;
@@ -631,7 +631,7 @@ namespace tcp_server
         /// </summary>
         /// <param name="name_"> the name of the user you want to kick</param>
         /// <returns>any error messages or nothing</returns>
-        private static String KickByName(Object name_)
+        public String KickByName(Object name_)
         {
             String name = (String)name_;
             foreach (User user in Users)
@@ -650,7 +650,7 @@ namespace tcp_server
         /// </summary>
         /// <param name="name_"> the name of the user you want to ban</param>
         /// <returns>error messages</returns>
-        private static String BanByName(Object name_)
+        public String BanByName(Object name_)
         {
             String name = (String)name_;
             foreach (User user in Users)
@@ -670,12 +670,21 @@ namespace tcp_server
         /// (server command) get details about the network interface
         /// </summary>
         /// <returns>error message or info as a string</returns>
-        private static String IpConfig()
+        public String IpConfig()
         {
             return "Hostname: " + Dns.GetHostName() + "\nIPv4: " + IP;
         }
 
         #endregion
+    }
+
+    class Test
+    {
+        static void Main()
+        {
+            Server sv = new Server();
+            sv.Start();
+        }
     }
 }
 

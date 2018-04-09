@@ -5,34 +5,47 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-
 namespace tcp_server
 {
     /// <summary>
     /// a class that holds any function with any keys in different directories, has various methods 
     /// </summary>
-    public class RequestHandler
+    public class RequestHandler : Interfaces.ServerOptions.IServerRequest
     {
-        private Dictionary<String, Object> DictionaryRequests = new Dictionary<String, Object>(); // holds all dictionaries 
 
-        private Dictionary<String, Func<Object>> RequestHolder_1 = new Dictionary<String, Func<Object>>(); // a dictionary when a string is a key and a function with a return value of type Object
-        private Dictionary<String, Func<Object, Object>> RequestHolder_2 = new Dictionary<String, Func<Object, Object>>(); // a dictionary when a string is a key and a function with a return value of type Object, Object argument
-        private Dictionary<String, Func<Object, Object, Object>> RequestHolder_3 = new Dictionary<String, Func<Object, Object, Object>>(); // a dictionary when a string is a key and a function with a return value of type Object, Object argument
-        private Dictionary<String, Func<Object, Object, Object, Object>> RequestHolder_4 = new Dictionary<String, Func<Object, Object, Object, Object>>(); // a dictionary when a string is a key and a function with a return value of type Object, Object argument
-        private Dictionary<String, Func<Object, Object, Object, Object, Object>> RequestHolder_5 = new Dictionary<String, Func<Object, Object, Object, Object, Object>>(); // a dictionary when a string is a key and a function with a return value of type Object, Object argument
-        private Dictionary<String, Func<Object, Object, Object, Object, Object, Object>> RequestHolder_6 = new Dictionary<String, Func<Object, Object, Object, Object, Object, Object>>(); // a dictionary when a string is a key and a function with a return value of type Object, Object argument
-        private Dictionary<String, String> Discriptions = new Dictionary<String, String>(); // holds the description on every function 
+        public Dictionary<String, Object> DictionaryRequests { get; set; }                                              // holds all dictionaries 
 
-        private List<String> ArgKeyNames = new List<String>(); // all the keys that used for functions with arguments
-        private List<String> Keys = new List<String>();        // all keys for every function
-        private List<String> KeysName = new List<String>();    // the name of a key which the user can write in the CLI
-        private String ClassName;                              // server or client holder??!?!?
+        public Dictionary<String, Func<Object>> RequestHolder_1 { get; set; }                                           // a dictionary when a string is a key and a function with a return value of type Object
+        public Dictionary<String, Func<Object, Object>> RequestHolder_2 { get; set; }                                   // a dictionary when a string is a key and a function with a return value of type Object, Object argument
+        public Dictionary<String, Func<Object, Object, Object>> RequestHolder_3 { get; set; }                           // a dictionary when a string is a key and a function with a return value of type Object, Object argument
+        public Dictionary<String, Func<Object, Object, Object, Object>> RequestHolder_4 { get; set; }                   // a dictionary when a string is a key and a function with a return value of type Object, Object argument
+        public Dictionary<String, Func<Object, Object, Object, Object, Object>> RequestHolder_5 { get; set; }           // a dictionary when a string is a key and a function with a return value of type Object, Object argument
+        public Dictionary<String, Func<Object, Object, Object, Object, Object, Object>> RequestHolder_6 { get; set; }   // a dictionary when a string is a key and a function with a return value of type Object, Object argument
+        public Dictionary<String, String> Discriptions { get; set; }                                                    // holds the description on every function 
+
+        public List<String> ArgKeyNames { get; set; }       // all the keys that used for functions with arguments
+        public List<String> Keys { get; set; }              // all keys for every function
+        public List<String> KeysName { get;  set; }         // the name of a key which the user can write in the CLI   
+        public String ClassName { get; set; }               // server or client holder??!?!?
+
         /// <summary>
         /// initialzies the class instance
         /// </summary>
         /// <param ClassName="Name_"> which type of host is using the holder, server or client.</param>
         public RequestHandler(String Name_)
         {
+            DictionaryRequests = new Dictionary<String, Object>();
+            RequestHolder_1 = new Dictionary<String, Func<Object>>();
+            RequestHolder_2 = new Dictionary<String, Func<Object, Object>>();
+            RequestHolder_3 = new Dictionary<String, Func<Object, Object, Object>>();
+            RequestHolder_4 = new Dictionary<String, Func<Object, Object, Object, Object>>();
+            RequestHolder_5 = new Dictionary<String, Func<Object, Object, Object, Object, Object>>();
+            RequestHolder_6 = new Dictionary<String, Func<Object, Object, Object, Object, Object, Object>>();
+            Discriptions = new Dictionary<String, String>();
+
+            ArgKeyNames = new List<String>();
+            Keys = new List<String>();
+            KeysName = new List<String>();
 
             ClassName = Name_;
             Keys.Add("Key_1");
